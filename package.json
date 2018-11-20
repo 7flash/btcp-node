@@ -1,0 +1,38 @@
+{
+  "name": "btcp-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/7flash/btcp-node.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/7flash/btcp-node/issues"
+  },
+  "homepage": "https://github.com/7flash/btcp-node#readme",
+  "dependencies": {
+    "blockchain.info": "^2.12.1",
+    "eosjs": "^20.0.0-beta2",
+    "highland": "^2.13.0",
+    "node-fetch": "^2.3.0",
+    "redis": "^2.8.0",
+    "sinon": "^7.1.1",
+    "text-encoding": "^0.7.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-spies": "^1.0.0",
+    "mocha": "^5.2.0",
+    "sinon-chai": "^3.2.0",
+    "fakeredis": "^2.0.0"
+  }
+}
