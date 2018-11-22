@@ -76,28 +76,39 @@ describe('BtcExecutor', function() {
 
   describe('TokensMinterDuplexStream', () => {
     it('should mint eos tokens for sender of btc payment', () => {
-      const eosNode = {
+      const usersTableMock = {
+        rows: [{
+          userID: 0,
+          internalAccount: 'holder',
+          externalAccount: '14xdPidvcTWhNEF4uNpYtdQFALALNdDVWD'
+        }],
+        more: false
+      }
+      const api = {
         transact: sinon.spy()
+      }
+      const rpc = {
+        get_table_rows: sinon.spy(() => usersTableMock)
       }
       const expectedActions = {
         actions: [{
-          account: 'eosio.pegtoken',
-          name: 'transferToBtcAccount',
+          account: 'pegtoken',
+          name: 'issue',
           authorization: [{
             actor: 'userA',
             permission: 'active'
           }],
           data: {
-            from: 'userA',
-            to: '14xdPidvcTWhNEF4uNpYtdQFALALNdDVWD',
+            userID: '0',
             quantity: '8000000 TOK',
             memo: ''
           }
         }]
       }
-      const stream = new TokensMinterDuplexStream({ eosNode })
+      const stream = new TokensMinterDuplexStream({ api, rpc })
       stream.write(payment, 'utf8', () => {
-        expect(eosNode.transact).to.have.been.calledWith(expectedActions)
+        expect(api.transact).to.have.been.calledWith(expectedActions)
+        expect(rpc.get_table_rows).to.have.been.calledWith({ code: 'pegtoken', scope: 'TOK', table: 'users' })
         const result = stream.read()
         expect(result).to.be.deep.equal({ hash: payment.hash, status: 2 })
       })

@@ -1,30 +1,31 @@
 const { Duplex } = require("stream")
 
 class TokensMinterDuplexStream extends Duplex {
-  constructor({ eosNode }) {
+  constructor({ api, rpc }) {
     super({ objectMode: true })
 
-    this.eosNode = eosNode
+    this.api = api
+    this.rpc = rpc
   }
 
   async _write(payment, encoding, callback) {
+    const users = await this.rpc.get_table_rows({ code: 'pegtoken', scope: 'TOK', table: 'users' })
     const actions = {
       actions: [{
-        account: 'eosio.pegtoken',
-        name: 'transferToBtcAccount',
+        account: 'pegtoken',
+        name: 'issue',
         authorization: [{
           actor: 'userA',
           permission: 'active'
         }],
         data: {
-          from: 'userA',
-          to: payment.btcAddress,
+          userID: '0',
           quantity: `${payment.amount} TOK`,
           memo: ''
         }
       }]
     }
-    await this.eosNode.transact(actions)
+    await this.api.transact(actions)
     this.push({ hash: payment.hash, status: 2 })
     callback()
   }

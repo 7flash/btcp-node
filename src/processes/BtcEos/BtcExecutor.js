@@ -23,7 +23,7 @@ const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), te
 
 const start = () => {
   (new BtcWatcherReadableStream({ redisClient, blockInterval }))
-    .pipe(new TokensMinterDuplexStream({ eosNode }))
+    .pipe(new TokensMinterDuplexStream({ api, rpc }))
     .pipe(new UpdateStatusWritableStream({ redisClient }))
 }
 start()
