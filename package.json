@@ -20,13 +20,15 @@
   },
   "homepage": "https://github.com/7flash/btcp-node#readme",
   "dependencies": {
+    "@dfuse/eosws-js": "^0.11.3",
     "blockchain.info": "^2.12.1",
     "eosjs": "^20.0.0-beta2",
     "highland": "^2.13.0",
     "node-fetch": "^2.3.0",
     "redis": "^2.8.0",
     "sinon": "^7.1.1",
-    "text-encoding": "^0.7.0"
+    "text-encoding": "^0.7.0",
+    "ws": "^6.1.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
