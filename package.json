@@ -21,6 +21,8 @@
   "homepage": "https://github.com/7flash/btcp-node#readme",
   "dependencies": {
     "@dfuse/eosws-js": "^0.11.3",
+    "bignumber.js": "^8.0.1",
+    "bitcoinjs-lib": "^3.3.2",
     "blockchain.info": "^2.12.1",
     "eosjs": "^20.0.0-beta2",
     "highland": "^2.13.0",

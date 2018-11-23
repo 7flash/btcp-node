@@ -10,5 +10,6 @@ module.exports = {
     httpEndpoint: 'http://127.0.0.1:8888'
   },
   dfuseEndpoint: 'kylin.eos.dfuse.io',
-  dfuseToken: secrets.dfuseToken
+  dfuseToken: secrets.dfuseToken,
+  issueAccountName: "sevenflash44"
 }
