@@ -21,8 +21,7 @@ const paymentFromTransactionFormatted = (paymentTransaction, paymentAddress) => 
 
 const blockExplorer = (() => {
   const getLatestBlockStub = sinon.stub()
-  getLatestBlockStub.onCall(0).returns(1)
-  getLatestBlockStub.returns(2)
+  getLatestBlockStub.returns({ height: 2 })
 
   const getBlockHeightStub = sinon.stub()
   getBlockHeightStub.withArgs(1).resolves({ blocks: [{ tx: [paymentTransaction] }]})

@@ -16,19 +16,14 @@ class TransactionsStream extends Readable {
 
   async start() {
     let currentBlock = this.startBlock
-    let latestBlock = await this.blockExplorer.getLatestBlock() - this.blockElapseInterval
 
     while (true) {
       try {
         await this.loadTransactions(currentBlock)
-
-        currentBlock++
-        if (currentBlock > latestBlock) {
-          await this.waitForBlock(currentBlock)
-        }
+        currentBlock = currentBlock + 1
       } catch (e) {
-        console.log('service is unavailable, wait for 60 seconds')
-        await sleep(60000)
+        console.log(`block #${currentBlock} not found, waiting...`)
+        await this.waitForBlock(currentBlock)
       }
     }
   }
@@ -41,21 +36,19 @@ class TransactionsStream extends Readable {
       this.push(transaction)
     }
 
-    console.log(`block ${blockNumber} done\r\n`)
+    console.log(`block ${blockNumber} found, ${transactions.length} transactions consumed`)
   }
 
   async waitForBlock(blockNumber) {
     await sleep(this.blockIntervalInSeconds * 1000)
 
-    const latestBlock = await this.blockExplorer.getLatestBlock()
+    const latestBlock = (await this.blockExplorer.getLatestBlock()).height
     if (blockNumber > latestBlock) {
       await this.waitForBlock(blockNumber)
     }
   }
 
   _read() {}
-
-  _destroy() {}
 }
 
 
