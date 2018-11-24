@@ -1,7 +1,7 @@
 const { Writable } = require("stream")
 const { promisify } = require("util")
 
-class UpdateStatusWritableStream extends Writable {
+class BtcUpdateStatusWritableStream extends Writable {
   constructor({ redisClient }) {
     super({ objectMode: true })
 
@@ -15,4 +15,4 @@ class UpdateStatusWritableStream extends Writable {
   }
 }
 
-module.exports = UpdateStatusWritableStream
+module.exports = BtcUpdateStatusWritableStream

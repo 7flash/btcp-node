@@ -3,12 +3,12 @@ const { Readable } = require("stream")
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 class TransactionsStream extends Readable {
-  constructor({ startBlock, blockExplorer, blockIntervalInSeconds, blockElapseInterval }) {
+  constructor({ startBlock, blockExplorer, blockInterval, blockElapseInterval }) {
     super({ objectMode: true })
 
     this.startBlock = startBlock
     this.blockExplorer = blockExplorer
-    this.blockIntervalInSeconds = blockIntervalInSeconds
+    this.blockInterval = blockInterval
     this.blockElapseInterval = blockElapseInterval
 
     this.start()
@@ -36,11 +36,11 @@ class TransactionsStream extends Readable {
       this.push(transaction)
     }
 
-    console.log(`block ${blockNumber} found, ${transactions.length} transactions consumed`)
+    console.log(`block #${blockNumber} found, ${transactions.length} transactions consumed`)
   }
 
   async waitForBlock(blockNumber) {
-    await sleep(this.blockIntervalInSeconds * 1000)
+    await sleep(this.blockInterval)
 
     const latestBlock = (await this.blockExplorer.getLatestBlock()).height
     if (blockNumber > latestBlock) {

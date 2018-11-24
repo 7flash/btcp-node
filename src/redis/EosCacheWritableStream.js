@@ -1,6 +1,10 @@
 const { Writable } = require("stream")
 const { promisify } = require("util")
 
+const validRepayment = (repayment) =>
+  Number.isInteger(repayment.amount) &&
+  repayment.btcAddress && repayment.hash
+
 class EosCacheWritableStream extends Writable {
   constructor({ redisClient }) {
     super({ objectMode: true })
@@ -14,7 +18,7 @@ class EosCacheWritableStream extends Writable {
 
   async _write(repayment, encoding, callback) {
     const exists = await this.hmget(`repayments:${repayment.hash}`, 'hash')
-    if (exists[0] == null) {
+    if (exists[0] == null && validRepayment(repayment)) {
       await this.rpush(`repayments`, repayment.hash)
       await this.hmset(`repayments:${repayment.hash}`, repayment)
     }

@@ -11,11 +11,11 @@ const redis = require("redis")
 const config = require("../../config")
 const BtcWatcherReadableStream = require("../../redis/BtcWatcherReadableStream")
 const TokensMinterDuplexStream = require("../../eos/TokensMinterDuplexStream")
-const UpdateStatusWritableStream = require("../../redis/UpdateStatusWritableStream")
+const BtcUpdateStatusWritableStream = require("../../redis/BtcUpdateStatusWritableStream")
 
 const redisClient = redis.createClient(config.redis)
 
-const { blockInterval, eosSettings } = config
+const { blockInterval, eosSettings, issuerAccount, tokenAccount, tokenSymbol, tokenDecimals } = config
 
 const signatureProvider = new JsSignatureProvider([eosSettings.activePrivateKey])
 const rpc = new JsonRpc(eosSettings.httpEndpoint, { fetch })
@@ -23,7 +23,7 @@ const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), te
 
 const start = () => {
   (new BtcWatcherReadableStream({ redisClient, blockInterval }))
-    .pipe(new TokensMinterDuplexStream({ api, rpc }))
-    .pipe(new UpdateStatusWritableStream({ redisClient }))
+    .pipe(new TokensMinterDuplexStream({ api, rpc, issuerAccount, tokenAccount, tokenSymbol, tokenDecimals }))
+    .pipe(new BtcUpdateStatusWritableStream({ redisClient }))
 }
 start()

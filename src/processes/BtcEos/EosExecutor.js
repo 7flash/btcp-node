@@ -17,7 +17,7 @@ const EosUpdateStatusWritableStream = require("../../redis/EosUpdateStatusWritab
 
 const redisClient = redis.createClient(config.redis)
 
-const { blockInterval, issuerAccountName, eosSettings } = config
+const { blockInterval, issuerAccount, tokenAccount, tokenSymbol, tokenDecimals, eosSettings } = config
 const updateInterval = blockInterval
 
 const signatureProvider = new JsSignatureProvider([eosSettings.activePrivateKey])
@@ -37,8 +37,8 @@ const start = () => {
     .pipe(new CoinsReleaserWritableStream({ sendPayment }))
 
   // burns eos tokens in contract when bitcoins was released (contract holds tokens until that moment)
-  const burn = repayments.fork()
-    .pipe(new TokensBurnerDuplexStream({ api, rpc, issuerAccountName }))
+  const burn = repayments.observe()
+    .pipe(new TokensBurnerDuplexStream({ api, rpc, issuerAccount, tokenAccount, tokenSymbol, tokenDecimals }))
     .pipe(new EosUpdateStatusWritableStream({ redisClient })) // updates status of processed transaction
 }
 start()

@@ -1,6 +1,8 @@
 const { Readable } = require("stream")
 const { promisify } = require("util")
 
+const { sleep } = require("../helpers")
+
 class BtcWatcherReadableStream extends Readable {
   constructor({ redisClient, blockInterval }) {
     super({ objectMode: true })
