@@ -14,7 +14,8 @@ const paymentFromTransaction = (transaction, paymentAddress) => ({
 })
 
 const isValidPaymentTransaction = (transaction, paymentAddress) =>
-  transaction.out.map((output) => output.addr).indexOf(paymentAddress) > -1
+  transaction.out.map((output) => output.addr).indexOf(paymentAddress) > -1 &&
+    transaction.inputs[0].prev_out.addr !== paymentAddress
 
 module.exports = {
   senderFromTransaction,
