@@ -1,20 +1,21 @@
 const secrets = require("./secrets.js")
 
 module.exports = {
-  startBlock: 1444871,
-  blockInterval: 200000,
-  blockElapseInterval: 0,
-  paymentAddress: 'mqtaf5jVoHDQ8zhhJ7bvQimBJh5Ty5J75Q',
+  startBlock: 1445375, // BtcWatcher will start to process transactions from this block
+  blockInterval: 200000, // Time in milliseconds between bitcoin blocks
+  blockElapseInterval: 0, // How many confirmations watcher will wait before add transaction to execution queue
+  paymentAddress: 'mqtaf5jVoHDQ8zhhJ7bvQimBJh5Ty5J75Q', // Bitcoin wallet that holds frozen funds
+  issuerAccount: 'sevenflash44', // Account that allowed to mint and burn EOS tokens
+  tokenAccount: 'sevenflash22', // Account of EOS smart contract
+  tokenSymbol: 'BTC', // Token symbol equals scope of contract that contains balances and accounts
+  tokenDecimals: 8, // 1 BTC = 10^8 satoshi
+  dfuseEndpoint: 'kylin.eos.dfuse.io',
+  redis: 'http://127.0.0.1:6379',
+  dfuseToken: secrets.dfuseToken,
+  btcPrivateKey: secrets.btcPrivateKey, // Private key from wallet that holds funds
   eosSettings: {
     activePrivateKey: secrets.eosPrivateKey,
-    httpEndpoint: 'https://api.kylin-testnet.eospacex.com',
+    httpEndpoint: 'http://kylin.fn.eosbixin.com',
     startBlock: -3600
   },
-  dfuseEndpoint: 'kylin.eos.dfuse.io',
-  dfuseToken: secrets.dfuseToken,
-  issuerAccount: 'sevenflash44',
-  tokenAccount: 'sevenflash22',
-  tokenSymbol: 'BTC',
-  tokenDecimals: 8,
-  redis: 'http://127.0.0.1:6379'
 }
