@@ -16,6 +16,5 @@ module.exports = {
   tokenAccount: 'sevenflash22',
   tokenSymbol: 'BTC',
   tokenDecimals: 8,
-  redis: 'http://127.0.0.1:6379',
-  btcPrivateKey: 'cNYL8CvcScad2bz5F4PSGtjscxtYZzrKgQLs3Cv1makUq6C4wUDN'
+  redis: 'http://127.0.0.1:6379'
 }
