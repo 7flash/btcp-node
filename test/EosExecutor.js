@@ -81,26 +81,26 @@ describe('EosExecutor', function() {
       const rpc = {
         get_table_rows: sinon.spy(() => usersTableMock)
       }
-      const issuerAccountName = 'userA'
+      const config = { tokenAccount: 'pegtoken', tokenSymbol: 'TOK', tokenDecimals: 8, issuerAccount: 'userA' }
       const expectedActions = {
         actions: [{
           account: 'pegtoken',
           name: 'burn',
           authorization: [{
-            actor: issuerAccountName,
+            actor: config.issuerAccount,
             permission: 'active'
           }],
           data: {
             userID: 0,
-            quantity: '1.0000 TOK',
+            quantity: '0.00010000 TOK',
             memo: ''
           }
         }]
       }
-      const stream = new TokensBurnerWritableStream({ api, rpc, issuerAccountName })
+      const stream = new TokensBurnerWritableStream({ api, rpc, ...config })
       stream.write(repayment, 'utf8', () => {
         expect(api.transact).to.have.been.calledWith(expectedActions)
-        expect(rpc.get_table_rows).to.have.been.calledWith({ code: 'pegtoken', scope: 'TOK', table: 'users' })
+        expect(rpc.get_table_rows).to.have.been.calledWith({ code: 'pegtoken', scope: 'TOK', table: 'users', limit: 100 })
         const result = stream.read()
         expect(result).to.be.deep.equal({ hash: repayment.hash, status: 2 })
         done()

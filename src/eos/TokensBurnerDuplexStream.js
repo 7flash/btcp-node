@@ -20,7 +20,7 @@ class TokensBurnerDuplexStream extends Duplex {
     try {
       const users = await this.rpc.get_table_rows({code: this.tokenAccount, scope: this.tokenSymbol, table: 'users', limit: 100})
       const userID = users.rows.find((user) => user.externalAccount == repayment.btcAddress).userID
-      const quantity = Number.parseFloat(repayment.amount / 10 ** this.tokenDecimals).toFixed(this.decimals)
+      const quantity = Number.parseFloat(repayment.amount / 10 ** this.tokenDecimals).toFixed(this.tokenDecimals)
       const actions = {
         actions: [{
           account: this.tokenAccount,

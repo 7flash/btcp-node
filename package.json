@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     "highland": "^2.13.0",
     "node-fetch": "^2.3.0",
     "redis": "^2.8.0",
+    "request": "^2.88.0",
     "sinon": "^7.1.1",
     "text-encoding": "^0.7.0",
     "ws": "^6.1.2"

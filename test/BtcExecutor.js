@@ -9,7 +9,7 @@ const { paymentFromTransaction } = require("../src/helpers")
 const BtcWatcherReadableStream = require("../src/redis/BtcWatcherReadableStream")
 const PaymentsValidatorTransformStream = require("../src/btc/PaymentsValidatorTransformStream")
 const TokensMinterDuplexStream = require("../src/eos/TokensMinterDuplexStream")
-const UpdateStatusWritableStream = require("../src/redis/UpdateStatusWritableStream")
+const BtcUpdateStatusWritableStream = require("../src/redis/BtcUpdateStatusWritableStream")
 
 describe('BtcExecutor', function() {
   this.timeout(50000)
@@ -75,7 +75,7 @@ describe('BtcExecutor', function() {
   */
 
   describe('TokensMinterDuplexStream', () => {
-    it('should mint eos tokens for sender of btc payment', () => {
+    it('should mint eos tokens for sender of btc payment', (done) => {
       const usersTableMock = {
         rows: [{
           userID: 0,
@@ -90,37 +90,40 @@ describe('BtcExecutor', function() {
       const rpc = {
         get_table_rows: sinon.spy(() => usersTableMock)
       }
+      const config = { tokenAccount: 'pegtoken', tokenSymbol: 'TOK', tokenDecimals: 8, issuerAccount: 'userA' }
       const expectedActions = {
         actions: [{
-          account: 'pegtoken',
+          account: config.tokenAccount,
           name: 'issue',
           authorization: [{
-            actor: 'userA',
+            actor: config.issuerAccount,
             permission: 'active'
           }],
           data: {
-            userID: '0',
-            quantity: '8000000 TOK',
+            userID: 0,
+            quantity: `0.08000000 ${config.tokenSymbol}`,
             memo: ''
           }
         }]
       }
-      const stream = new TokensMinterDuplexStream({ api, rpc })
+      const stream = new TokensMinterDuplexStream({ api, rpc, ...config })
       stream.write(payment, 'utf8', () => {
-        expect(api.transact).to.have.been.calledWith(expectedActions)
-        expect(rpc.get_table_rows).to.have.been.calledWith({ code: 'pegtoken', scope: 'TOK', table: 'users' })
+        expect(api.transact).to.have.been.calledWith(expectedActions, { blocksBehind: 3, expireSeconds: 30 })
+        expect(rpc.get_table_rows).to.have.been.calledWith({ code: 'pegtoken', scope: 'TOK', table: 'users', limit: 100 })
         const result = stream.read()
         expect(result).to.be.deep.equal({ hash: payment.hash, status: 2 })
+        done()
       })
     })
   })
 
-  describe('UpdateStatusWritableStream', () => {
-    it('should update status of processed transactions in database', () => {
-      const stream = new UpdateStatusWritableStream({ redisClient })
+  describe('BtcUpdateStatusWritableStream', () => {
+    it('should update status of processed transactions in database', (done) => {
+      const stream = new BtcUpdateStatusWritableStream({ redisClient })
       stream.write({ hash: payment.hash, status: 2 }, 'utf8', () => {
         redisClient.hmget(`payments:${payment.hash}`, 'status', (err, status) => {
-          expect(status).to.be.equal(2)
+          expect(status[0]).to.be.equal('2')
+          done()
         })
       })
     })

@@ -47,7 +47,20 @@ describe('EosWatcher', function() {
         getActionTraces: sinon.spy(() => ({ onMessage }))
       }
 
-      const stream = _(new RepaymentsWatcherReadableStream({ dfuseClient }))
+      const usersTableMock = {
+        rows: [{
+          userID: 0,
+          internalAccount: 'holder',
+          externalAccount: '14xdPidvcTWhNEF4uNpYtdQFALALNdDVWD'
+        }],
+        more: false
+      }
+      const rpc = {
+        get_table_rows: sinon.spy(() => usersTableMock)
+      }
+      const config = { tokenAccount: 'pegtoken', tokenSymbol: 'TOK', startBlock: 0 }
+
+      const stream = _(new RepaymentsWatcherReadableStream({ dfuseClient, rpc, ...config }))
 
       stream.pull((err, result) => {
         expect(result).to.be.deep.equal(repayment)

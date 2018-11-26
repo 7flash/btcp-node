@@ -1,7 +1,7 @@
 const { BigNumber } = require("bignumber.js")
 const bitcoin = require("bitcoinjs-lib")
 const { paymentAddress: from, btcPrivateKey, paymentAddress } = require("../config")
-const fetch = require("node-fetch")
+const request = require("request")
 
 const bitpay = 'https://test-insight.bitpay.com/api'
 
@@ -12,8 +12,13 @@ const fetchUnspents = (address) => {
 }
 
 const broadcastTx = (rawtx) => {
-  return fetch(`${bitpay}/tx/send`, { method: 'POST', body: { rawtx } }).then((res) => {
-    return res.text()
+  return new Promise((resolve, reject) => {
+    request.post({ url: `${bitpay}/tx/send`, form: { rawtx }}, (error, response, body) => {
+      if (error)
+        return reject(error)
+
+      return resolve(body)
+    })
   })
 }
 

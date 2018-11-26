@@ -41,8 +41,6 @@ class RepaymentsWatcherReadableStream extends Readable {
         } else if (message.type === "listening") {
           console.log('signup start listening...')
         } else if (message.type === "action_trace") {
-          resolve()
-
           const { internalAccount, externalAccount } = message.data.trace.act.data
 
           this.users[internalAccount] = externalAccount
