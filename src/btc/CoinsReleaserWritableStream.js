@@ -14,10 +14,10 @@ class CoinsReleaserWritableStream extends Writable {
       const result = await this.sendPayment({btcAddress, amount})
 
       console.log(JSON.stringify(result))
-      callback()
     } catch (e) {
       console.error(e)
     }
+    callback()
   }
 
   _read() {}

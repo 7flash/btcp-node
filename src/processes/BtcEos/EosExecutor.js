@@ -37,7 +37,7 @@ const start = () => {
     .pipe(new CoinsReleaserWritableStream({ sendPayment }))
 
   // burns eos tokens in contract when bitcoins was released (contract holds tokens until that moment)
-  const burn = repayments.observe()
+  const burn = repayments.fork()
     .pipe(new TokensBurnerDuplexStream({ api, rpc, issuerAccount, tokenAccount, tokenSymbol, tokenDecimals }))
     .pipe(new EosUpdateStatusWritableStream({ redisClient })) // updates status of processed transaction
 }
