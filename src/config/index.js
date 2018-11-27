@@ -16,6 +16,6 @@ module.exports = {
   eosSettings: {
     activePrivateKey: secrets.eosPrivateKey,
     httpEndpoint: 'http://kylin.fn.eosbixin.com',
-    startBlock: -3600
+    startBlock: 21958561
   },
 }

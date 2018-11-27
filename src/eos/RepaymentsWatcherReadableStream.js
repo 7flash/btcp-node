@@ -10,7 +10,7 @@ class RepaymentsWatcherReadableStream extends Readable {
     this.tokenSymbol = tokenSymbol
 
     this.startBlock = startBlock
-    this.users = []
+    this.users = {}
 
     this.listen()
   }
@@ -43,6 +43,8 @@ class RepaymentsWatcherReadableStream extends Readable {
         } else if (message.type === "action_trace") {
           const { internalAccount, externalAccount } = message.data.trace.act.data
 
+          console.log(`new signup, ${internalAccount} => ${externalAccount}`)
+
           this.users[internalAccount] = externalAccount
         }
       })
@@ -59,6 +61,8 @@ class RepaymentsWatcherReadableStream extends Readable {
         } else if (message.type === "action_trace") {
           const { from, to, quantity, memo } = message.data.trace.act.data
           const hash = message.data.trace.trx_id
+
+          console.log(`new action => ${hash}`)
 
           if (to == this.tokenAccount) {
             const btcAddress = this.findExternalAddress(from)

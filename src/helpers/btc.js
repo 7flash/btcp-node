@@ -6,8 +6,13 @@ const request = require("request")
 const bitpay = 'https://test-insight.bitpay.com/api'
 
 const fetchUnspents = (address) => {
-  return fetch(`${bitpay}/addr/${address}/utxo`).then((res) => {
-    return res.json()
+  return new Promise((resolve, reject) => {
+    request.get({ url: `${bitpay}/addr/${address}/utxo`, json: true }, (error, response, body) => {
+      if (error)
+        return reject(error)
+
+      return resolve(body)
+    })
   })
 }
 
