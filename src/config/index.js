@@ -13,6 +13,11 @@ module.exports = {
   redis: 'http://127.0.0.1:6379',
   dfuseToken: secrets.dfuseToken,
   btcPrivateKey: secrets.btcPrivateKey, // Private key from wallet that holds funds
+  ethereum: {
+    rpcProvider: 'http://127.0.0.1:9545',
+    pegAddress: '0x6187e7d5E4D9FE6c120F1Cf24981d655DAFd19c7',
+    fromBlock: 0
+  },
   eosSettings: {
     activePrivateKey: secrets.eosPrivateKey,
     httpEndpoint: 'http://kylin.fn.eosbixin.com',
