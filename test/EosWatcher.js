@@ -38,7 +38,6 @@ describe('EosWatcher', function() {
       const signup = ({ internalAddress, externalAddress }) => trace({ internalAddress, externalAddress})
 
       const onMessage = (fn) => {
-        fn(signup({ internalAddress: "holder", externalAddress: "14xdPidvcTWhNEF4uNpYtdQFALALNdDVWD" }))
         fn(transfer({ from: "pegtoken", to: "holder" }))
         fn(transfer({ from: "holder", to: "pegtoken" }))
       }
