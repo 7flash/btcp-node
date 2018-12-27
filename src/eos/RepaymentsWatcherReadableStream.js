@@ -65,12 +65,12 @@ class RepaymentsWatcherReadableStream extends Readable {
           console.log(`new action => ${hash}`)
 
           if (to == this.tokenAccount) {
-            const btcAddress = this.findExternalAddress(from)
+            const address = this.findExternalAddress(from)
 
-            if (btcAddress) {
+            if (address) {
               const quantityBits = Number.parseInt(quantity.replace('.', ''))
               const repayment = {
-                btcAddress: btcAddress,
+                address: address,
                 amount: quantityBits,
                 status: 1,
                 hash: hash

@@ -3,7 +3,7 @@ const { promisify } = require("util")
 
 const validRepayment = (repayment) =>
   Number.isInteger(repayment.amount) &&
-  repayment.btcAddress && repayment.hash
+  repayment.address && repayment.hash
 
 class EosCacheWritableStream extends Writable {
   constructor({ redisClient }) {

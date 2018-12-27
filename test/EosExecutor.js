@@ -14,13 +14,13 @@ describe('EosExecutor', function() {
   this.timeout(40000)
 
   const repayment = {
-    btcAddress: "14xdPidvcTWhNEF4uNpYtdQFALALNdDVWD",
+    address: "14xdPidvcTWhNEF4uNpYtdQFALALNdDVWD",
     amount: "10000",
     status: "1",
     hash: 'txid'
   }
   const repaymentExecuted = {
-    btcAddress: "15xdPidvcTWhNEF4uNpYtdQFALALNdDVWD",
+    address: "15xdPidvcTWhNEF4uNpYtdQFALALNdDVWD",
     amount: "10000",
     status: "1",
     hash: 'txid2'
@@ -58,10 +58,10 @@ describe('EosExecutor', function() {
 
   describe('CoinsReleaserWritableStream', () => {
     it('should release bitcoins to user', () => {
-      const { btcAddress, amount } = repayment
+      const { address, amount } = repayment
       const sendPayment = sinon.spy(() => Promise.resolve(true))
       const stream = _([repayment]).pipe(new CoinsReleaserWritableStream({ sendPayment }))
-      expect(sendPayment).to.have.been.calledWith({ btcAddress, amount })
+      expect(sendPayment).to.have.been.calledWith({ address, amount })
     })
   })
 

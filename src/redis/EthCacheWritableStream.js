@@ -15,10 +15,12 @@ class EthCacheWritableStream extends Writable {
   }
 
   async _write(paymentEvent, encoding, callback) {
-    const hash = paymentEvent.transactionHash
+    const hash = paymentEvent.transactionHash.startsWith('0x') ?
+      paymentEvent.transactionHash.slice(2) :
+      paymentEvent.transactionHash
 
     const payment = {
-      ethAddress: paymentEvent.args.user,
+      address: paymentEvent.args.user,
       amount: paymentEvent.args.amount,
       hash: hash,
       status: 1

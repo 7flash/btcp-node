@@ -23,7 +23,7 @@ class BtcCacheWritableStream extends Writable {
     await this.rpush(`payments`, payment.hash)
     await this.hmset(`payments:${payment.hash}`, payment)
 
-    console.log(`saved BTC payment, ${payment.btcAddress} sent ${payment.amount} at ${payment.hash}`)
+    console.log(`saved BTC payment, ${payment.address} sent ${payment.amount} at ${payment.hash}`)
 
     callback()
   }

@@ -68,12 +68,13 @@ describe('EthWatcher', function() {
       await new Promise(resolve => {
         setTimeout(() => {
           redisClient.lrange('ethPayments', 0, 0, (err, result) => {
-            expect(result[0]).to.be.equal(paymentEvent.transactionHash)
-            redisClient.hgetall(`ethPayments:${paymentEvent.transactionHash}`, (err, result) => {
+            const expectedHash = paymentEvent.transactionHash.slice(2)
+            expect(result[0]).to.be.equal(expectedHash)
+            redisClient.hgetall(`ethPayments:${expectedHash}`, (err, result) => {
               expect(result).to.be.deep.equal({
-                ethAddress: paymentEvent.args.user,
+                address: paymentEvent.args.user,
                 amount: paymentEvent.args.amount,
-                hash: paymentEvent.transactionHash,
+                hash: expectedHash,
                 status: '1'
               })
               resolve()
