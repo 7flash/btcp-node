@@ -12,48 +12,24 @@ class RepaymentsWatcherReadableStream extends Readable {
     this.startBlock = startBlock
     this.users = {}
 
-    this.listen()
-  }
-
-  findExternalAddress(internalAddress) {
-    return this.users[internalAddress]
-  }
-
-  async listen() {
-    await this.fetchUsers()
-    this.listenSignups()
     this.listenRepayments()
   }
 
-  async fetchUsers() {
+  async findExternalAccount(internalAccount) {
     const users = await this.rpc.get_table_rows({code: this.tokenAccount, scope: this.tokenSymbol, table: 'users', limit: 100})
-    users.rows.forEach(({ internalAccount, externalAccount }) => {
-      this.users[internalAccount] = externalAccount
-    })
-  }
+    const foundUser = users.rows.find(user => user.internalAccount == internalAccount)
 
-  listenSignups() {
-    this.dfuseClient
-      .getActionTraces({ account: this.tokenAccount, action_name: "signup" }, { listen: true, start_block: this.startBlock })
-      .onMessage((message) => {
-        if (message.type === "error") {
-          console.error(message)
-        } else if (message.type === "listening") {
-          console.log('signup start listening...')
-        } else if (message.type === "action_trace") {
-          const { internalAccount, externalAccount } = message.data.trace.act.data
-
-          console.log(`new signup, ${internalAccount} => ${externalAccount}`)
-
-          this.users[internalAccount] = externalAccount
-        }
-      })
+    if (foundUser && foundUser.externalAccount) {
+      return foundUser.externalAccount
+    } else {
+      return null
+    }
   }
 
   listenRepayments() {
     this.dfuseClient
       .getActionTraces({ account: this.tokenAccount, action_name: "transfer" }, { listen: true, start_block: this.startBlock })
-      .onMessage((message) => {
+      .onMessage(async (message) => {
         if (message.type === "error") {
           console.error(message)
         } else if (message.type === "listening") {
@@ -64,23 +40,29 @@ class RepaymentsWatcherReadableStream extends Readable {
 
           console.log(`new action => ${hash}`)
 
-          if (to == this.tokenAccount) {
-            const address = this.findExternalAddress(from)
+          if (to !== this.tokenAccount)
+            return
 
-            if (address) {
-              const quantityBits = Number.parseInt(quantity.replace('.', ''))
-              const repayment = {
-                address: address,
-                amount: quantityBits,
-                status: 1,
-                hash: hash
-              }
+          if (quantity.indexOf(` ${this.tokenSymbol}`) < 0)
+            return
 
-              this.push(repayment)
-            } else {
-              console.log(`${from} send a repayment, but not registered`)
-            }
+          const address = await this.findExternalAccount(from)
+
+          if (!address) {
+            console.error(`${from} send a repayment, but has no account`)
+            return
           }
+
+          const quantityBits = Number.parseInt(quantity.replace('.', ''))
+
+          const repayment = {
+            address: address,
+            amount: quantityBits,
+            status: 1,
+            hash: hash
+          }
+
+          this.push(repayment)
         }
       })
   }
