@@ -7,9 +7,8 @@ const redis = require("fakeredis")
 const { paymentFromTransaction } = require("../src/helpers")
 
 const BtcWatcherReadableStream = require("../src/redis/BtcWatcherReadableStream")
-const PaymentsValidatorTransformStream = require("../src/btc/PaymentsValidatorTransformStream")
 const TokensMinterDuplexStream = require("../src/eos/TokensMinterDuplexStream")
-const BtcUpdateStatusWritableStream = require("../src/redis/BtcUpdateStatusWritableStream")
+const UpdateStatusWritableStream = require("../src/redis/UpdateStatusWritableStream")
 
 describe('BtcExecutor', function() {
   this.timeout(50000)
@@ -54,26 +53,6 @@ describe('BtcExecutor', function() {
     })
   })
 
-  /*
-  describe('PaymentsValidatorTransformStream', () => {
-    it('should filter kyc-approved users', (done) => {
-      const stream = new PaymentsValidatorTransformStream()
-
-      stream.write(payment, 'utf8', () => {
-        stream.write(anotherPayment, 'utf8', () => {
-          stream.read((err, result) => {
-            expect(result).to.be.deep.equal(payment)
-            stream.pull((err, result) => {
-              expect(result).to.be.deep.equal(anotherPayment)
-              done()
-            })
-          })
-        })
-      })
-    })
-  })
-  */
-
   describe('TokensMinterDuplexStream', () => {
     it('should mint eos tokens for sender of btc payment', (done) => {
       const usersTableMock = {
@@ -117,9 +96,10 @@ describe('BtcExecutor', function() {
     })
   })
 
-  describe('BtcUpdateStatusWritableStream', () => {
+  describe('UpdateStatusWritableStream', () => {
     it('should update status of processed transactions in database', (done) => {
-      const stream = new BtcUpdateStatusWritableStream({ redisClient })
+      const collectionName = 'payments'
+      const stream = new UpdateStatusWritableStream({ redisClient, collectionName })
       stream.write({ hash: payment.hash, status: 2 }, 'utf8', () => {
         redisClient.hmget(`payments:${payment.hash}`, 'status', (err, status) => {
           expect(status[0]).to.be.equal('2')

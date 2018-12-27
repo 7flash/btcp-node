@@ -13,7 +13,7 @@ const { sendPayment } = require("../../helpers")
 const EosWatcherReadableStream = require("../../redis/EosWatcherReadableStream")
 const CoinsReleaserWritableStream = require("../../btc/CoinsReleaserWritableStream")
 const TokensBurnerDuplexStream = require("../../eos/TokensBurnerDuplexStream")
-const EosUpdateStatusWritableStream = require("../../redis/EosUpdateStatusWritableStream")
+const UpdateStatusWritableStream = require("../../redis/UpdateStatusWritableStream")
 
 const redisClient = redis.createClient(config.redis)
 
@@ -28,6 +28,8 @@ const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), te
 // it means coins for transaction B will be released only when coins from transaction A released and tokens burned
 const _ = require("highland")
 
+const collectionName = 'repayments'
+
 const start = () => {
   // listen to new eos transactions saved in database, and also check previously rejected transactions
   const repayments = _(new EosWatcherReadableStream({ redisClient, updateInterval }))
@@ -39,6 +41,6 @@ const start = () => {
   // burns eos tokens in contract when bitcoins was released (contract holds tokens until that moment)
   const burn = repayments.fork()
     .pipe(new TokensBurnerDuplexStream({ api, rpc, issuerAccount, tokenAccount, tokenSymbol, tokenDecimals }))
-    .pipe(new EosUpdateStatusWritableStream({ redisClient })) // updates status of processed transaction
+    .pipe(new UpdateStatusWritableStream({ redisClient, collectionName })) // updates status of processed transaction
 }
 start()

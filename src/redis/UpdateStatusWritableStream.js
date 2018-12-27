@@ -1,11 +1,11 @@
 const { Writable } = require("stream")
 const { promisify } = require("util")
 
-class EosUpdateStatusWritableStream extends Writable {
-  constructor({ redisClient }) {
+class UpdateStatusWritableStream extends Writable {
+  constructor({ redisClient, collectionName }) {
     super({ objectMode: true })
 
-    this.collectionName = 'repayments'
+    this.collectionName = collectionName
     this.redisClient = redisClient
     this.hmset = promisify(this.redisClient.hmset).bind(this.redisClient)
   }
@@ -17,4 +17,4 @@ class EosUpdateStatusWritableStream extends Writable {
   }
 }
 
-module.exports = EosUpdateStatusWritableStream
+module.exports = UpdateStatusWritableStream
