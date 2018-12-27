@@ -6,7 +6,7 @@ const PaymentsWatcherReadableStream = require("../../eth/PaymentsWatcherReadable
 const EthCacheWritableStream = require("../../redis/EthCacheWritableStream")
 const pegABI = require("../../eth/abi.json")
 
-const { rpcProvider, pegAddress, fromBlock } = config.ethereum
+const { rpcProvider, pegAddress, startBlock: fromBlock } = config.ethereum
 
 const web3 = Web3Wallet.create(null, rpcProvider)
 

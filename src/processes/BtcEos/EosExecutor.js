@@ -17,8 +17,7 @@ const UpdateStatusWritableStream = require("../../redis/UpdateStatusWritableStre
 
 const redisClient = redis.createClient(config.redis)
 
-const { blockInterval, issuerAccount, tokenAccount, tokenSymbol, tokenDecimals, eosSettings } = config
-const updateInterval = blockInterval
+const { bitcoin: { tokenSymbol, tokenDecimals, blockInterval: updateInterval }, issuerAccount, tokenAccount, eosSettings } = config
 
 const signatureProvider = new JsSignatureProvider([eosSettings.activePrivateKey])
 const rpc = new JsonRpc(eosSettings.httpEndpoint, { fetch })

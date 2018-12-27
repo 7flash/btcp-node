@@ -12,7 +12,7 @@ const PaymentsWatcherReadableStream = require("../../btc/PaymentsWatcherReadable
 const BtcCacheWritableStream = require("../../redis/BtcCacheWritableStream")
 
 const redisClient = redis.createClient(config.redis)
-const { startBlock, blockInterval, blockElapseInterval, paymentAddress } = config
+const { bitcoin: { startBlock, blockInterval, blockElapseInterval, paymentAddress } } = config
 
 const start = () => {
   (new PaymentsWatcherReadableStream({ startBlock, blockExplorer, blockInterval, blockElapseInterval })) // fetch all transactions from blocks using block explorer
