@@ -1,6 +1,6 @@
 const { BigNumber } = require("bignumber.js")
 const bitcoin = require("bitcoinjs-lib")
-const { paymentAddress: from, btcPrivateKey, paymentAddress } = require("../config")
+const { bitcoin: { privateKey, paymentAddress } } = require("../config")
 const request = require("request")
 
 const bitpay = 'https://test-insight.bitpay.com/api'
@@ -28,9 +28,9 @@ const broadcastTx = (rawtx) => {
 }
 
 const sendPayment = async ({ address, amount }) => {
-  const keyPair = bitcoin.ECPair.fromWIF(btcPrivateKey, bitcoin.networks.testnet)
+  const keyPair = bitcoin.ECPair.fromWIF(privateKey, bitcoin.networks.testnet)
   const tx = new bitcoin.TransactionBuilder(bitcoin.networks.testnet)
-  const unspents = await fetchUnspents(from)
+  const unspents = await fetchUnspents(paymentAddress)
 
   const feeValue = 15000
   const fundValue     = Number.parseInt(amount)
