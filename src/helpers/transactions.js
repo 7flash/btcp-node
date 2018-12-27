@@ -7,7 +7,7 @@ const amountFromTransaction = (transaction, paymentAddress) =>
 const hashFromTransaction = (transaction) => transaction.hash
 
 const paymentFromTransaction = (transaction, paymentAddress) => ({
-  btcAddress: senderFromTransaction(transaction),
+  address: senderFromTransaction(transaction),
   amount: amountFromTransaction(transaction, paymentAddress),
   hash: hashFromTransaction(transaction),
   status: 1

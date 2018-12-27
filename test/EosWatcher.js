@@ -10,7 +10,7 @@ describe('EosWatcher', function() {
   this.timeout(55000)
 
   const repayment = {
-    btcAddress: "14xdPidvcTWhNEF4uNpYtdQFALALNdDVWD",
+    address: "14xdPidvcTWhNEF4uNpYtdQFALALNdDVWD",
     amount: 10000,
     status: 1,
     hash: 'txid'

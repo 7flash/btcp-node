@@ -27,7 +27,7 @@ const broadcastTx = (rawtx) => {
   })
 }
 
-const sendPayment = async ({ btcAddress, amount }) => {
+const sendPayment = async ({ address, amount }) => {
   const keyPair = bitcoin.ECPair.fromWIF(btcPrivateKey, bitcoin.networks.testnet)
   const tx = new bitcoin.TransactionBuilder(bitcoin.networks.testnet)
   const unspents = await fetchUnspents(from)
@@ -38,12 +38,12 @@ const sendPayment = async ({ btcAddress, amount }) => {
   const skipValue     = totalUnspent - fundValue - feeValue
 
   if (skipValue < 546) {
-    throw new Error(`cannot send ${amount} to ${btcAddress}, not enough balance`)
+    throw new Error(`cannot send ${amount} to ${address}, not enough balance`)
   }
 
   unspents.forEach(({ txid, vout }) => tx.addInput(txid, vout, 0xfffffffe))
   tx.addOutput(paymentAddress, skipValue)
-  tx.addOutput(btcAddress, fundValue)
+  tx.addOutput(address, fundValue)
 
   tx.inputs.forEach((input, index) => {
     tx.sign(index, keyPair)

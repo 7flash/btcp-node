@@ -9,9 +9,9 @@ class CoinsReleaserWritableStream extends Writable {
 
   async _write(repayment, encoding, callback) {
     try {
-      const {btcAddress, amount} = repayment
+      const {address, amount} = repayment
 
-      const result = await this.sendPayment({btcAddress, amount})
+      const result = await this.sendPayment({address, amount})
 
       console.log(JSON.stringify(result))
     } catch (e) {

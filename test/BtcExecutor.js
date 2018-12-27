@@ -17,7 +17,7 @@ describe('BtcExecutor', function() {
   let redisClient;
 
   const payment = {
-    btcAddress: "14xdPidvcTWhNEF4uNpYtdQFALALNdDVWD",
+    address: "14xdPidvcTWhNEF4uNpYtdQFALALNdDVWD",
     amount: "8000000",
     hash: "3d0d36176372eef77cee8cce8ffc60c8318e0d4376a26c9098f1a174aca6a2a8",
     status: "1"

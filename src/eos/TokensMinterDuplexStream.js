@@ -19,10 +19,10 @@ class TokensMinterDuplexStream extends Duplex {
   async _write(payment, encoding, callback) {
     try {
       const users = await this.rpc.get_table_rows({code: this.tokenAccount, scope: this.tokenSymbol, table: 'users', limit: 100})
-      const user = users.rows.find((user) => user.externalAccount == payment.btcAddress)
-      console.log(`found ${users.length} users in contract table`)
+      const user = users.rows.find((user) => user.externalAccount == payment.address)
+      console.log(`found ${users.rows.length} users in contract table`)
       if (!user) {
-        throw new Error(`${payment.btcAddress} not registered`)
+        throw new Error(`${payment.address} not registered`)
       }
       const quantity = Number.parseFloat(payment.amount / 10**this.tokenDecimals).toFixed(this.tokenDecimals)
       const actions = {
