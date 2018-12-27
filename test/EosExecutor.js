@@ -8,7 +8,7 @@ const redis = require("fakeredis")
 const EosWatcherReadableStream = require('../src/redis/EosWatcherReadableStream')
 const CoinsReleaserWritableStream = require('../src/btc/CoinsReleaserWritableStream')
 const TokensBurnerWritableStream = require('../src/eos/TokensBurnerDuplexStream')
-const EosUpdateStatusWritableStream = require('../src/redis/EosUpdateStatusWritableStream')
+const UpdateStatusWritableStream = require('../src/redis/UpdateStatusWritableStream')
 
 describe('EosExecutor', function() {
   this.timeout(40000)
@@ -108,9 +108,10 @@ describe('EosExecutor', function() {
     })
   })
 
-  describe('EosUpdateStatusWritableStream', () => {
+  describe('UpdateStatusWritableStream', () => {
     it('should update status of processed transaction', () => {
-      const stream = new EosUpdateStatusWritableStream({ redisClient })
+      const collectionName = 'repayments'
+      const stream = new UpdateStatusWritableStream({ redisClient, collectionName })
       stream.write({ hash: repayment.hash, status: 2 }, 'utf8', () => {
         redisClient.hmget(`repayments:${repayment.hash}`, 'status', (err, status) => {
           expect(status).to.be.equal(2)
