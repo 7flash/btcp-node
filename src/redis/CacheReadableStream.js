@@ -44,7 +44,7 @@ class CacheReadableStream extends Readable {
           this.push(payment)
         }
       } else {
-        await sleepUntilNextBlock()
+        await this.sleepUntilNextBlock()
       }
     }
   }
