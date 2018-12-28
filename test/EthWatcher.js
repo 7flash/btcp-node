@@ -1,7 +1,7 @@
 const expect = require("chai").expect
 const _ = require("highland")
 const redis = require("fakeredis")
-const Web3Wallet = require("web3-wallet");
+const Web3Wallet = require("web3-wallet")
 
 const PaymentsWatcherReadableStream = require("../src/eth/PaymentsWatcherReadableStream")
 const CacheWritableStream = require("../src/redis/CacheWritableStream")
@@ -14,17 +14,19 @@ const pegAddress = '0x6187e7d5E4D9FE6c120F1Cf24981d655DAFd19c7'
 describe('EthWatcher', function() {
   this.timeout(300000)
 
-  const user = '0x7f123f1b8ab851d6cd0b0a46cd25122fbf6c16d0'
-  const userPrivateKey = '0x2a0957f39b7edd9ef34d6d68ce8f6427ae8e1896ca49847b385b659b5ac04dce'
+  const user = '0xd2b8a69af63b582530a37341f4f8e547a1c00040'
+  const userPrivateKey = 'a289ae9d1b8bf1b5ce0a0c931726442fab187bfd46920b0a80021f7ac4fc5c00'
 
   before(async () => {
-    this.web3 = Web3Wallet.create(null, rpcProvider)
+    const wallet = Web3Wallet.wallet.fromPrivateKey(userPrivateKey)
+
+    this.web3 = Web3Wallet.create(wallet, rpcProvider)
 
     this.peg = this.web3.eth.loadContract(pegABI, pegAddress)
   })
 
   describe('PaymentsWatcherReadableStream', () => {
-    it('should stream all deposits from ethereum contract', async () => {
+    it('[e2e] should stream all deposits from ethereum contract', async () => {
       const amount = 1000
 
       const stream = _(new PaymentsWatcherReadableStream({
@@ -37,7 +39,7 @@ describe('EthWatcher', function() {
 
       await new Promise(resolve => {
         stream.pull((err, paymentEvent) => {
-          expect(paymentEvent.args.user).to.be.deep.equal(user)
+          expect(paymentEvent.args.user).to.be.equal(user)
           expect(paymentEvent.args.amount.toNumber()).to.be.equal(amount)
           resolve()
         })

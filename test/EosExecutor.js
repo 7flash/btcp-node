@@ -4,11 +4,17 @@ const sinon = require("sinon")
 const expect = chai.expect
 const _ = require("highland")
 const redis = require("fakeredis")
+const Web3Wallet = require("web3-wallet")
 
 const CacheReadableStream = require('../src/redis/CacheReadableStream')
 const CoinsReleaserWritableStream = require('../src/btc/CoinsReleaserWritableStream')
 const TokensBurnerWritableStream = require('../src/eos/TokensBurnerDuplexStream')
 const UpdateStatusWritableStream = require('../src/redis/UpdateStatusWritableStream')
+const DepositReleaserDuplexStream = require('../src/eth/DepositReleaserDuplexStream')
+
+const ethRpcProvider = 'http://127.0.0.1:9545/'
+const ethContractABI = require("../src/eth/abi.json")
+const ethContractAddress = '0x6187e7d5E4D9FE6c120F1Cf24981d655DAFd19c7'
 
 describe('EosExecutor', function() {
   this.timeout(40000)
@@ -114,8 +120,40 @@ describe('EosExecutor', function() {
       const stream = new UpdateStatusWritableStream({ redisClient, collectionName })
       stream.write({ hash: repayment.hash, status: 2 }, 'utf8', () => {
         redisClient.hmget(`repayments:${repayment.hash}`, 'status', (err, status) => {
-          expect(status).to.be.equal(2)
+          expect(parseInt(status[0])).to.be.equal(2)
         })
+      })
+    })
+  })
+
+  describe('DepositReleaserDuplexStream', () => {
+    it('[e2e] should release funds to user', async () => {
+      const relayer = '0xc4d01132b087f9d3c0b2d75ff113806efd496743'
+      const user = '0xd2b8a69af63b582530a37341f4f8e547a1c00040'
+      const relayerPrivateKey = 'c145fb2e507b8b4607727b76de621433df6426839275d1fe19e2ed0f67e8dc30'
+
+      const ethRepayment = {
+        address: user,
+        amount: '100',
+        status: 1,
+        hash: 'eos-transaction-hash'
+      }
+      const wallet = Web3Wallet.wallet.fromPrivateKey(relayerPrivateKey)
+      const web3 = Web3Wallet.create(wallet, ethRpcProvider)
+      const contract = web3.eth.loadContract(ethContractABI, ethContractAddress)
+
+      const stream = _([ethRepayment]).pipe(new DepositReleaserDuplexStream({
+        contract, from: relayer
+      }))
+
+      await new Promise(resolve => {
+        setTimeout(async () => {
+          const result = stream.read()
+
+          expect(result).to.be.equal(ethRepayment)
+
+          resolve()
+        }, 1000)
       })
     })
   })
