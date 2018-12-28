@@ -5,7 +5,7 @@ const expect = chai.expect
 const _ = require("highland")
 const redis = require("fakeredis")
 
-const EosWatcherReadableStream = require('../src/redis/EosWatcherReadableStream')
+const CacheReadableStream = require('../src/redis/CacheReadableStream')
 const CoinsReleaserWritableStream = require('../src/btc/CoinsReleaserWritableStream')
 const TokensBurnerWritableStream = require('../src/eos/TokensBurnerDuplexStream')
 const UpdateStatusWritableStream = require('../src/redis/UpdateStatusWritableStream')
@@ -45,9 +45,9 @@ describe('EosExecutor', function() {
     })
   })
 
-  describe('EosWatcherReadableStream', () => {
+  describe('CacheReadableStream', () => {
     it('should fetch non executed repayments from database', (done) => {
-      const stream = _(new EosWatcherReadableStream({ redisClient, updateInterval:5000 }))
+      const stream = _(new CacheReadableStream({ redisClient, updateInterval:5000, collectionName: 'repayments' }))
 
       stream.pull((err, result) => {
         expect(result).to.be.deep.equal(repayment)

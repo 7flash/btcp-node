@@ -9,7 +9,7 @@ const { TextDecoder, TextEncoder } = require("text-encoding")
 const fetch = require("node-fetch")
 const redis = require("redis")
 const config = require("../../config")
-const BtcWatcherReadableStream = require("../../redis/BtcWatcherReadableStream")
+const CacheReadableStream = require("../../redis/CacheReadableStream")
 const TokensMinterDuplexStream = require("../../eos/TokensMinterDuplexStream")
 const UpdateStatusWritableStream = require("../../redis/UpdateStatusWritableStream")
 
@@ -24,7 +24,7 @@ const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), te
 const collectionName = 'payments'
 
 const start = () => {
-  (new BtcWatcherReadableStream({ redisClient, blockInterval }))
+  (new CacheReadableStream({ redisClient, blockInterval, collectionName }))
     .pipe(new TokensMinterDuplexStream({ api, rpc, issuerAccount, tokenAccount, tokenSymbol, tokenDecimals }))
     .pipe(new UpdateStatusWritableStream({ redisClient, collectionName }))
 }

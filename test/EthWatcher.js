@@ -45,7 +45,7 @@ describe('EthWatcher', function() {
     })
   })
 
-  describe('EthCacheWritableStream', () => {
+  describe('CacheWritableStream', () => {
     it('should save payment to database', async () => {
       const paymentEvent = {
         "logIndex": 0,

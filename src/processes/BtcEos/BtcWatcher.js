@@ -11,7 +11,7 @@ const config = require("../../config")
 const blockExplorer = require('blockchain.info/blockexplorer').usingNetwork(3)
 const PaymentsWatcherReadableStream = require("../../btc/PaymentsWatcherReadableStream")
 const PaymentsThroughStream = require("../../btc/PaymentsThroughStream")
-const CacheWritableStream = require("../../redis/BtcCacheWritableStream")
+const CacheWritableStream = require("../../redis/CacheWritableStream")
 
 const redisClient = redis.createClient(config.redis)
 const { bitcoin: { startBlock, blockInterval, blockElapseInterval, paymentAddress } } = config
