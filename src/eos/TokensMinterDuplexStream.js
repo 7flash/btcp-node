@@ -1,4 +1,5 @@
 const { Duplex } = require("stream")
+const { BigNumber } = require("bignumber.js")
 
 class TokensMinterDuplexStream extends Duplex {
   constructor({ api, rpc, tokenAccount, tokenSymbol, tokenDecimals, issuerAccount }) {
@@ -19,30 +20,33 @@ class TokensMinterDuplexStream extends Duplex {
   async _write(payment, encoding, callback) {
     try {
       const users = await this.rpc.get_table_rows({code: this.tokenAccount, scope: this.tokenSymbol, table: 'users', limit: 100})
-      const user = users.rows.find((user) => user.externalAccount == payment.address)
-      console.log(`found ${users.rows.length} users in contract table`)
-      if (!user) {
-        throw new Error(`${payment.address} not registered`)
+      const user = users.rows.find((user) => user.externalAccount.toLowerCase() == payment.address.toLowerCase())
+      if (user) {
+        const quantity = new BigNumber(payment.amount)
+          .div(new BigNumber(10).pow(this.tokenDecimals))
+          .toFixed(this.tokenDecimals)
+
+        const actions = {
+          actions: [{
+            account: this.tokenAccount,
+            name: 'issue',
+            authorization: [{
+              actor: this.issuerAccount,
+              permission: 'active'
+            }],
+            data: {
+              userID: user.userID,
+              quantity: `${quantity} ${this.tokenSymbol}`,
+              memo: ''
+            }
+          }]
+        }
+        await this.api.transact(actions, this.options)
+        this.push({hash: payment.hash, status: 2})
+        console.log(`minted ${quantity} ${this.tokenSymbol} for user #${user.userID}`)
+      } else {
+        console.log(`${payment.hash} received payment from non-registered user`)
       }
-      const quantity = Number.parseFloat(payment.amount / 10**this.tokenDecimals).toFixed(this.tokenDecimals)
-      const actions = {
-        actions: [{
-          account: this.tokenAccount,
-          name: 'issue',
-          authorization: [{
-            actor: this.issuerAccount,
-            permission: 'active'
-          }],
-          data: {
-            userID: user.userID,
-            quantity: `${quantity} ${this.tokenSymbol}`,
-            memo: ''
-          }
-        }]
-      }
-      await this.api.transact(actions, this.options)
-      this.push({hash: payment.hash, status: 2})
-      console.log(`minted ${quantity} ${this.tokenSymbol} for user #${user.userID}`)
     } catch (err) {
       console.error(err)
     }

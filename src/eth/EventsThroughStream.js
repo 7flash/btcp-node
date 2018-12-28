@@ -8,7 +8,7 @@ const EventsThroughStream = _.map((event) => {
   return {
     hash: hash,
     address: event.args.user,
-    amount: event.args.amount,
+    amount: event.args.amount.toString(),
     status: 1
   }
 })

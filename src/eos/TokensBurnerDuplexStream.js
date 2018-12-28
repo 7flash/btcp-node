@@ -1,4 +1,5 @@
 const { Duplex } = require("stream")
+const { BigNumber } = require("bignumber.js")
 
 class TokensBurnerDuplexStream extends Duplex {
   constructor({ api, rpc, tokenAccount, tokenSymbol, tokenDecimals, issuerAccount }) {
@@ -19,8 +20,11 @@ class TokensBurnerDuplexStream extends Duplex {
   async _write(repayment, encoding, callback) {
     try {
       const users = await this.rpc.get_table_rows({code: this.tokenAccount, scope: this.tokenSymbol, table: 'users', limit: 100})
-      const userID = users.rows.find((user) => user.externalAccount == repayment.address).userID
-      const quantity = Number.parseFloat(repayment.amount / 10 ** this.tokenDecimals).toFixed(this.tokenDecimals)
+      const userID = users.rows.find((user) => user.externalAccount.toLowerCase() == repayment.address.toLowerCase()).userID
+      const quantity = new BigNumber(repayment.amount)
+        .div(new BigNumber(10).pow(this.tokenDecimals))
+        .toFixed(this.tokenDecimals)
+
       const actions = {
         actions: [{
           account: this.tokenAccount,
@@ -36,6 +40,7 @@ class TokensBurnerDuplexStream extends Duplex {
           }
         }]
       }
+
       await this.api.transact(actions, this.options)
       this.push({hash: repayment.hash, status: 2})
       console.log(`burned ${quantity} ${this.tokenSymbol} from user #${userID}`)

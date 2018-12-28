@@ -60,7 +60,7 @@ describe('EthWatcher', function() {
         "event": "Deposit",
         "args": {
           "user": "0x7f123f1b8ab851d6cd0b0a46cd25122fbf6c16d0",
-          "amount": "1000"
+          "amount": new this.web3.BigNumber("1000")
         }
       }
 
@@ -78,7 +78,7 @@ describe('EthWatcher', function() {
             redisClient.hgetall(`ethPayments:${expectedHash}`, (err, result) => {
               expect(result).to.be.deep.equal({
                 address: paymentEvent.args.user,
-                amount: paymentEvent.args.amount,
+                amount: paymentEvent.args.amount.toString(),
                 hash: expectedHash,
                 status: '1'
               })
