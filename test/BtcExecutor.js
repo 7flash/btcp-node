@@ -6,7 +6,7 @@ const _ = require('highland')
 const redis = require("fakeredis")
 const { paymentFromTransaction } = require("../src/helpers")
 
-const BtcWatcherReadableStream = require("../src/redis/BtcWatcherReadableStream")
+const CacheReadableStream = require("../src/redis/CacheReadableStream")
 const TokensMinterDuplexStream = require("../src/eos/TokensMinterDuplexStream")
 const UpdateStatusWritableStream = require("../src/redis/UpdateStatusWritableStream")
 
@@ -39,17 +39,19 @@ describe('BtcExecutor', function() {
     })
   })
 
-  describe('BtcWatcherReadableStream', () => {
+  describe('CacheReadableStream', () => {
     it('should fetch payments from database cache', (done) => {
-      const stream = _(new BtcWatcherReadableStream({ redisClient, blockInterval: 1000 }))
+      const stream = _(new CacheReadableStream({ redisClient, blockInterval: 1000, collectionName: 'payments' }))
 
-      stream.pull((err, result) => {
-        expect(result).to.be.deep.equal(payment)
+      setTimeout(() => {
         stream.pull((err, result) => {
-          expect(result).to.be.deep.equal(anotherPayment)
-          done()
+          expect(result).to.be.deep.equal(payment)
+          stream.pull((err, result) => {
+            expect(result).to.be.deep.equal(anotherPayment)
+            done()
+          })
         })
-      })
+      }, 500)
     })
   })
 

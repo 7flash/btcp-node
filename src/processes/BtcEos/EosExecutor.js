@@ -10,7 +10,7 @@ const redis = require("redis")
 const config = require("../../config")
 const { sendPayment } = require("../../helpers")
 
-const EosWatcherReadableStream = require("../../redis/EosWatcherReadableStream")
+const CacheReadableStream = require("../../redis/CacheReadableStream")
 const CoinsReleaserWritableStream = require("../../btc/CoinsReleaserWritableStream")
 const TokensBurnerDuplexStream = require("../../eos/TokensBurnerDuplexStream")
 const UpdateStatusWritableStream = require("../../redis/UpdateStatusWritableStream")
@@ -31,7 +31,7 @@ const collectionName = 'repayments'
 
 const start = () => {
   // listen to new eos transactions saved in database, and also check previously rejected transactions
-  const repayments = _(new EosWatcherReadableStream({ redisClient, updateInterval }))
+  const repayments = _(new CacheReadableStream({ redisClient, updateInterval, collectionName }))
 
   // send bitcoins to address associated with sender of tokens
   const release = repayments.fork()

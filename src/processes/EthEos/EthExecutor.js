@@ -3,7 +3,7 @@ const fetch = require("node-fetch")
 const { Api, JsonRpc, RpcError, JsSignatureProvider } = require("eosjs")
 const { TextDecoder, TextEncoder } = require("text-encoding")
 
-const EthWatcherReadableStream = require("../../redis/EthWatcherReadableStream")
+const CacheReadableStream = require("../../redis/CacheReadableStream")
 const UpdateStatusWritableStream = require("../../redis/UpdateStatusWritableStream")
 const TokensMinterDuplexStream = require("../../eos/TokensMinterDuplexStream")
 
@@ -29,7 +29,7 @@ const redisClient = redis.createClient(redisConfig)
 const collectionName = 'ethPayments'
 
 const start = () => {
-  (new EthWatcherReadableStream({ redisClient, blockInterval }))
+  (new CacheReadableStream({ redisClient, blockInterval, collectionName }))
     .pipe(new TokensMinterDuplexStream({
       api: eosAPI,
       rpc: rpcProvider,

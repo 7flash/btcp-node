@@ -5,14 +5,14 @@ const expect = chai.expect
 const _ = require("highland")
 const redis = require("fakeredis")
 
-const EthWatcherReadableStream = require("../src/redis/EthWatcherReadableStream")
+const CacheReadableStream = require("../src/redis/CacheReadableStream")
 const TokensMinterDuplexStream = require("../src/eos/TokensMinterDuplexStream")
 const UpdateStatusWritableStream = require("../src/redis/UpdateStatusWritableStream")
 
 describe('EthExecutor', function() {
   this.timeout(300000)
 
-  describe('EthWatcherReadableStream', () => {
+  describe('CacheReadableStream', () => {
     it('should retrieve payments from redis', async () => {
       const payment = {
         address: '0x7f123f1b8ab851d6cd0b0a46cd25122fbf6c16d0',
@@ -31,7 +31,7 @@ describe('EthExecutor', function() {
         })
       })
 
-      const stream = _(new EthWatcherReadableStream({ redisClient, blockInterval: 100 }))
+      const stream = _(new CacheReadableStream({ redisClient, blockInterval: 100, collectionName: 'ethPayments' }))
 
       await new Promise(resolve => {
         stream.pull((err, result) => {
