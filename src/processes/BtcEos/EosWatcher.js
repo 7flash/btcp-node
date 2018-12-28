@@ -10,7 +10,7 @@ const WebSocket = require("ws")
 const redis = require("redis")
 const config = require("../../config")
 const RepaymentsWatcherReadableStream = require("../../eos/RepaymentsWatcherReadableStream")
-const CacheWritableStream = require("../../redis/EosCacheWritableStream")
+const CacheWritableStream = require("../../redis/CacheWritableStream")
 
 const { EoswsClient, createEoswsSocket, InboundMessageType } = require("@dfuse/eosws-js")
 
