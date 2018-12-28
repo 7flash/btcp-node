@@ -4,7 +4,7 @@ const _ = require("highland")
 const redis = require("fakeredis")
 
 const RepaymentsWatcherReadableStream = require("../src/eos/RepaymentsWatcherReadableStream")
-const EosCacheWritableStream = require("../src/redis/EosCacheWritableStream")
+const CacheWritableStream = require("../src/redis/CacheWritableStream")
 
 describe('EosWatcher', function() {
   this.timeout(55000)
@@ -71,7 +71,7 @@ describe('EosWatcher', function() {
   describe('EosCacheWritableStream', () => {
     it('should save repayment transactions to database', (done) => {
       const redisClient = redis.createClient("eos")
-      const stream = new EosCacheWritableStream({ redisClient })
+      const stream = new CacheWritableStream({ redisClient, collectionName: 'repayments' })
 
       const formatted = (obj) =>
         Object.assign(...Object.keys(obj).map(k => ({ [k]: obj[k].toString() })))

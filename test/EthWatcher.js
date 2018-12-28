@@ -4,7 +4,8 @@ const redis = require("fakeredis")
 const Web3Wallet = require("web3-wallet");
 
 const PaymentsWatcherReadableStream = require("../src/eth/PaymentsWatcherReadableStream")
-const EthCacheWritableStream = require("../src/redis/EthCacheWritableStream")
+const CacheWritableStream = require("../src/redis/CacheWritableStream")
+const EventsThroughStream = require("../src/eth/EventsThroughStream")
 
 const rpcProvider = 'http://127.0.0.1:9545/'
 const pegABI = require("../src/eth/abi.json")
@@ -63,7 +64,9 @@ describe('EthWatcher', function() {
 
       const redisClient = redis.createClient("ethereum")
 
-      const stream = _([paymentEvent]).pipe(new EthCacheWritableStream(redisClient))
+      const stream = _([paymentEvent])
+        .through(EventsThroughStream)
+        .pipe(new CacheWritableStream({ redisClient, collectionName: 'ethPayments' }))
 
       await new Promise(resolve => {
         setTimeout(() => {

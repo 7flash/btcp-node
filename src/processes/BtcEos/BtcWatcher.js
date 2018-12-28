@@ -5,17 +5,22 @@
   should ignore already existing transactions in database
  */
 
+const _ = require("highland")
 const redis = require("redis")
 const config = require("../../config")
 const blockExplorer = require('blockchain.info/blockexplorer').usingNetwork(3)
 const PaymentsWatcherReadableStream = require("../../btc/PaymentsWatcherReadableStream")
-const BtcCacheWritableStream = require("../../redis/BtcCacheWritableStream")
+const PaymentsThroughStream = require("../../btc/PaymentsThroughStream")
+const CacheWritableStream = require("../../redis/BtcCacheWritableStream")
 
 const redisClient = redis.createClient(config.redis)
 const { bitcoin: { startBlock, blockInterval, blockElapseInterval, paymentAddress } } = config
 
+const collectionName = 'payments'
+
 const start = () => {
-  (new PaymentsWatcherReadableStream({ startBlock, blockExplorer, blockInterval, blockElapseInterval })) // fetch all transactions from blocks using block explorer
-    .pipe(new BtcCacheWritableStream({ redisClient, paymentAddress })) // filter transactions related to our address and save to redis database
+  _(new PaymentsWatcherReadableStream({ startBlock, blockExplorer, blockInterval, blockElapseInterval })) // fetch all transactions from blocks using block explorer
+    .through(PaymentsThroughStream(paymentAddress)) // filter transactions related to our address
+    .pipe(new CacheWritableStream({ redisClient, collectionName })) // save to redis database
 }
 start()
