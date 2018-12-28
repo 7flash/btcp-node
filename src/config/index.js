@@ -16,16 +16,17 @@ module.exports = {
     paymentAddress: 'mqtaf5jVoHDQ8zhhJ7bvQimBJh5Ty5J75Q', // Bitcoin wallet that holds frozen funds
   },
   ethereum: {
-    rpcProvider: 'https://ropsten.infura.io/v3/${secrets.infuraKey}',
+    rpcProvider: `https://ropsten.infura.io/v3/${secrets.infuraKey}`,
     pegAddress: '0x05F4505CfA43Af9A1E0894356cF7c89a791aC138',
-    startBlock: 0,
+    startBlock: 4715058,
     blockInterval: 10000, // Time in milliseconds between bitcoin blocks
     tokenSymbol: 'ETH', // EOS token
     tokenDecimals: 18,
     relayerAddress: '0xE7b757Fec7189768F0ff1dAFa0eA75a94bd0Dc22',
     relayerPrivateKey: secrets.ethPrivateKey,
     paymentsCollection: 'ethPayments',
-    repaymentsCollection: 'ethRepayments'
+    repaymentsCollection: 'ethRepayments',
+    eosStartBlock: 27605646
   },
   eosSettings: {
     activePrivateKey: secrets.eosPrivateKey,

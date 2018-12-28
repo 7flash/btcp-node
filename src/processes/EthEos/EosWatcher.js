@@ -2,7 +2,7 @@ const fetch = require("node-fetch")
 const WebSocket = require("ws")
 const redis = require("redis")
 const { JsonRpc } = require("eosjs")
-const { EoswsClient, createEoswsSocket, InboundMessageType } = require("@dfuse/eosws-js")
+const { EoswsClient, createEoswsSocket } = require("@dfuse/eosws-js")
 
 const RepaymentsWatcherReadableStream = require("../../eos/RepaymentsWatcherReadableStream")
 const CacheWritableStream = require("../../redis/CacheWritableStream")
@@ -11,8 +11,8 @@ const config = require("../../config")
 
 const {
   redis: redisConfig,
-  bitcoin: { tokenSymbol },
-  eosSettings: { startBlock, httpEndpoint },
+  ethereum: { tokenSymbol, eosStartBlock: startBlock },
+  eosSettings: { httpEndpoint },
   dfuseEndpoint, dfuseToken, tokenAccount
 } = config
 
@@ -21,7 +21,7 @@ const rpc = new JsonRpc(httpEndpoint, { fetch })
 const redisClient = redis.createClient(redisConfig)
 
 const dfuseClient = new EoswsClient(
-  createEoswsSocket(() => new WebSocket(`wss://${dfuseEndpoint}/v1/stream?token=${dfuseToken}`))
+  createEoswsSocket(() => new WebSocket(`wss://${dfuseEndpoint}/v1/stream?token=${dfuseToken}`, { origin: "https://kylin.eos.dfuse.io" }))
 )
 
 const collectionName = 'ethRepayments'

@@ -9,13 +9,16 @@ class DepositReleaserDuplexStream extends Duplex {
   }
 
   async _write(repayment, encoding, callback) {
-    const { address, amount } = repayment
+    const { address, amount, hash } = repayment
 
     try {
       const releaseTransaction = await this.contract.release(address, amount, { from: this.from, gas: 300000 })
-      console.log(`${repayment.hash} released at ${releaseTransaction}`)
+      console.log(`${hash} released at ${releaseTransaction}`)
 
-      this.push(repayment)
+      this.push({
+        address, amount, hash,
+        status: 2
+      })
     } catch (err) {
       console.error(err)
     }
