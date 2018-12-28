@@ -5,7 +5,8 @@ const redis = require("fakeredis")
 const { paymentFromTransaction } = require("../src/helpers")
 
 const PaymentsWatcherReadableStream = require("../src/btc/PaymentsWatcherReadableStream")
-const BtcCacheWritableStream = require("../src/redis/BtcCacheWritableStream")
+const CacheWritableStream = require("../src/redis/CacheWritableStream")
+const PaymentsThroughStream = require("../src/btc/PaymentsThroughStream")
 
 const paymentTransaction = require('./mocks/paymentTransaction.json')
 const anotherPaymentTransaction = { ...paymentTransaction }
@@ -62,9 +63,11 @@ describe('BtcWatcher', function() {
     it('should save payment transaction to database', (done) => {
       const expectedPayment = paymentFromTransactionFormatted(paymentTransaction, paymentAddress)
       const redisClient = redis.createClient("bitcoin")
-      const stream = _([paymentTransaction]).pipe(new BtcCacheWritableStream({
-        redisClient, paymentAddress
-      }))
+      const stream = _([paymentTransaction])
+        .through(PaymentsThroughStream(paymentAddress))
+        .pipe(new CacheWritableStream({
+          redisClient, collectionName: 'payments'
+        }))
 
       setTimeout(() => {
         redisClient.lrange('payments', 0, 0, (err, result) => {

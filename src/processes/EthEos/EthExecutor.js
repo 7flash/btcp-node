@@ -26,7 +26,7 @@ const eosAPI = new Api({
 
 const redisClient = redis.createClient(redisConfig)
 
-const collectionName = 'payments'
+const collectionName = 'ethPayments'
 
 const start = () => {
   (new EthWatcherReadableStream({ redisClient, blockInterval }))
